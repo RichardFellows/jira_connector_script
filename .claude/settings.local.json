@@ -2,7 +2,28 @@
   "permissions": {
     "allow": [
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git config:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(pip install:*)",
+      "Bash(python3 -m pip install black)",
+      "Bash(apt:*)",
+      "Bash(apt install:*)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "Bash(black:*)",
+      "Bash(python -m black:*)",
+      "Bash(pip3 install:*)",
+      "Bash(pipx install:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(git commit:*)",
+      "Bash(gh run list:*)",
+      "Bash(flake8:*)",
+      "Bash(mypy:*)",
+      "Bash(python:*)",
+      "Bash(jira-extract:*)"
     ],
     "deny": []
   }

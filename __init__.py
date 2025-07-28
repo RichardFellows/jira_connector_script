@@ -1,7 +1,7 @@
 """
 JIRA Analytics Package
 
-A comprehensive tool for extracting data from JIRA Server and creating 
+A comprehensive tool for extracting data from JIRA Server and creating
 interactive analytics dashboards for agile teams.
 """
 

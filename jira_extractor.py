@@ -21,6 +21,7 @@ import duckdb
 import argparse
 from datetime import datetime
 from typing import Dict, List, Optional, Any
+
 # from urllib.parse import urljoin  # unused
 import logging
 

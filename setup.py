@@ -3,7 +3,7 @@
 Setup configuration for JIRA Analytics Package
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 # Read the README file for long description
@@ -41,7 +41,7 @@ setup(
     long_description=read_readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/company/jira-analytics",
-    py_modules=['jira_extractor', 'jira_analytics_cli', 'jira_analytics'],
+    py_modules=["jira_extractor", "jira_analytics_cli", "jira_analytics"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
