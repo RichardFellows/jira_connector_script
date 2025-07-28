@@ -263,13 +263,16 @@ class JIRAExtractor:
 
                 start_at += max_results
 
-            # Log extraction
+            # Log extraction - generate ID manually
+            log_id = conn.execute(
+                "SELECT COALESCE(MAX(id), 0) + 1 FROM extraction_log"
+            ).fetchone()[0]
             conn.execute(
                 """
-                INSERT INTO extraction_log (project_key, start_date, end_date, issues_extracted)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO extraction_log (id, project_key, start_date, end_date, issues_extracted)
+                VALUES (?, ?, ?, ?, ?)
             """,
-                [project_key, start_date, end_date, issues_extracted],
+                [log_id, project_key, start_date, end_date, issues_extracted],
             )
 
         except Exception as e:
