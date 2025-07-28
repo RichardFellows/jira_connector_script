@@ -4,7 +4,6 @@ Setup configuration for JIRA Analytics Package
 """
 
 from setuptools import setup, find_packages
-import os
 
 
 # Read the README file for long description

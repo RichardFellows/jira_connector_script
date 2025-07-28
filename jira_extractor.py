@@ -19,9 +19,9 @@ import json
 import requests
 import duckdb
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional, Any
-from urllib.parse import urljoin
+# from urllib.parse import urljoin  # unused
 import logging
 
 
@@ -172,8 +172,8 @@ class JIRAExtractor:
             conn = duckdb.connect(self.db_path)
             result = conn.execute(
                 """
-                SELECT MAX(extraction_time) as last_extraction 
-                FROM extraction_log 
+                SELECT MAX(extraction_time) as last_extraction
+                FROM extraction_log
                 WHERE project_key = ?
             """,
                 [project_key],

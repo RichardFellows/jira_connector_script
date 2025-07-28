@@ -64,7 +64,7 @@ def main():
     env = os.environ.copy()
     env["JIRA_DB_PATH"] = args.db_path
 
-    print(f"🚀 Starting JIRA Analytics Dashboard...")
+    print("🚀 Starting JIRA Analytics Dashboard...")
     print(f"📊 Dashboard will be available at http://{args.host}:{args.port}")
     print(f"💾 Using database: {args.db_path}")
     print(f"🔄 Command: {' '.join(cmd)}")

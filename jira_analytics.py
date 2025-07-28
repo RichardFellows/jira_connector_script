@@ -263,7 +263,7 @@ def __(db_path, duckdb, json, pd, refresh_status):
 
         # Load issues data
         issues_query = """
-        SELECT 
+        SELECT
             id, key, project_key, project_name, issue_type, status, priority,
             summary, assignee, reporter, created, updated, resolved, due_date,
             labels, components, fix_versions, affects_versions, custom_fields,
