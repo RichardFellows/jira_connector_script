@@ -335,14 +335,34 @@ class JIRAExtractor:
             json.dumps(custom_fields) if custom_fields else None
         )
 
-        # Insert or replace issue
+        # Insert or update issue on conflict
         conn.execute(
             """
-            INSERT OR REPLACE INTO issues (
+            INSERT INTO issues (
                 id, key, project_key, project_name, issue_type, status, priority,
                 summary, description, assignee, reporter, created, updated, resolved,
                 due_date, labels, components, fix_versions, affects_versions, custom_fields
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (id) DO UPDATE SET
+                key = EXCLUDED.key,
+                project_key = EXCLUDED.project_key,
+                project_name = EXCLUDED.project_name,
+                issue_type = EXCLUDED.issue_type,
+                status = EXCLUDED.status,
+                priority = EXCLUDED.priority,
+                summary = EXCLUDED.summary,
+                description = EXCLUDED.description,
+                assignee = EXCLUDED.assignee,
+                reporter = EXCLUDED.reporter,
+                created = EXCLUDED.created,
+                updated = EXCLUDED.updated,
+                resolved = EXCLUDED.resolved,
+                due_date = EXCLUDED.due_date,
+                labels = EXCLUDED.labels,
+                components = EXCLUDED.components,
+                fix_versions = EXCLUDED.fix_versions,
+                affects_versions = EXCLUDED.affects_versions,
+                custom_fields = EXCLUDED.custom_fields
         """,
             [
                 issue_data["id"],
