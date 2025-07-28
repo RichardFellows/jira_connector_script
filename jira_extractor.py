@@ -29,9 +29,9 @@ class JIRAExtractor:
     def __init__(
         self,
         base_url: str,
-        token: str = None,
-        username: str = None,
-        password: str = None,
+        token: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
         db_path: str = "jira_data.duckdb",
     ):
         self.base_url = base_url.rstrip("/")
@@ -233,8 +233,8 @@ class JIRAExtractor:
                 # Make API request
                 params = {
                     "jql": jql,
-                    "startAt": start_at,
-                    "maxResults": max_results,
+                    "startAt": str(start_at),
+                    "maxResults": str(max_results),
                     "fields": ",".join(extract_fields),
                     "expand": "changelog",
                 }

@@ -47,7 +47,7 @@ jobs:
     
     - name: Type checking with mypy
       run: |
-        mypy *.py --ignore-missing-imports || true
+        mypy setup.py jira_extractor.py jira_analytics_cli.py --ignore-missing-imports || true
     
     - name: Test Python syntax
       run: |
