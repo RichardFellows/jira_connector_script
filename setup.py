@@ -6,6 +6,7 @@ Setup configuration for JIRA Analytics Package
 from setuptools import setup, find_packages
 import os
 
+
 # Read the README file for long description
 def read_readme():
     try:
@@ -14,19 +15,23 @@ def read_readme():
     except FileNotFoundError:
         return "JIRA Server Data Extractor and Analytics Dashboard"
 
+
 # Read requirements from requirements.txt
 def read_requirements():
     try:
         with open("requirements.txt", "r", encoding="utf-8") as fh:
-            return [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+            return [
+                line.strip() for line in fh if line.strip() and not line.startswith("#")
+            ]
     except FileNotFoundError:
         return [
             "requests>=2.28.0",
             "duckdb>=0.8.0",
             "marimo>=0.8.0",
             "plotly>=5.17.0",
-            "pandas>=2.0.0"
+            "pandas>=2.0.0",
         ]
+
 
 setup(
     name="jira-analytics",
