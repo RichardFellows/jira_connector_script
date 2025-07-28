@@ -1,0 +1,30 @@
+# Include documentation
+include README.md
+include DEPLOYMENT.md
+include LICENSE
+
+# Include configuration files
+include config.json.example
+include requirements.txt
+
+# Include Docker files
+include Dockerfile
+include docker-compose.yml
+include .dockerignore
+
+# Include package data
+recursive-include jira_analytics *.py
+recursive-include jira_analytics *.json
+recursive-include jira_analytics *.md
+
+# Exclude build artifacts
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude *.duckdb
+global-exclude *.db
+
+# Exclude development files
+exclude .gitignore
+exclude setup.cfg
+exclude tox.ini
+exclude .travis.yml

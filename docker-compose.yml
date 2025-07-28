@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  jira-analytics:
+    build: .
+    ports:
+      - "2718:2718"
+    volumes:
+      # Mount data directory for persistent DuckDB storage
+      - ./data:/app/data
+      # Mount config directory for configuration files
+      - ./config:/app/config:ro
+    environment:
+      - JIRA_DB_PATH=/app/data/jira_data.duckdb
+      # Optional: Set default JIRA configuration via environment
+      - JIRA_URL=${JIRA_URL:-}
+      - JIRA_TOKEN=${JIRA_TOKEN:-}
+      - JIRA_USERNAME=${JIRA_USERNAME:-}
+      - JIRA_PASSWORD=${JIRA_PASSWORD:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2718/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jira-analytics.rule=Host(`analytics.yourdomain.com`)"
+      - "traefik.http.services.jira-analytics.loadbalancer.server.port=2718"
+
+  # Optional: Add a reverse proxy for production deployments
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - jira-analytics
+  #   restart: unless-stopped
+
+volumes:
+  jira_data:
+    driver: local

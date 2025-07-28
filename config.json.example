@@ -1,0 +1,30 @@
+{
+  "custom_field_mapping": {
+    "customfield_10001": "Story Points",
+    "customfield_10002": "Epic Link",
+    "customfield_10003": "Sprint",
+    "customfield_10004": "Business Value"
+  },
+  "fields": [
+    "key",
+    "summary", 
+    "description",
+    "issuetype",
+    "status",
+    "priority",
+    "assignee",
+    "reporter",
+    "created",
+    "updated",
+    "resolutiondate",
+    "duedate",
+    "labels",
+    "components",
+    "fixVersions",
+    "versions",
+    "customfield_10001",
+    "customfield_10002",
+    "customfield_10003",
+    "customfield_10004"
+  ]
+}
