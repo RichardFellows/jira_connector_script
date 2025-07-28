@@ -394,41 +394,49 @@ def __(filtered_df, mo):
 @app.cell
 def __(date_range, filtered_df, issue_types, statuses):
     # Apply filters to create analysis dataset
-    analysis_df = filtered_df.copy()
+    filtered_analysis_df = filtered_df.copy()
 
     if date_range.value:
         start_date, end_date = date_range.value
-        analysis_df = analysis_df[
-            (analysis_df["created"].dt.date >= start_date)
-            & (analysis_df["created"].dt.date <= end_date)
+        filtered_analysis_df = filtered_analysis_df[
+            (filtered_analysis_df["created"].dt.date >= start_date)
+            & (filtered_analysis_df["created"].dt.date <= end_date)
         ]
 
     if issue_types.value:
-        analysis_df = analysis_df[analysis_df["issue_type"].isin(issue_types.value)]
+        filtered_analysis_df = filtered_analysis_df[
+            filtered_analysis_df["issue_type"].isin(issue_types.value)
+        ]
 
     if statuses.value:
-        analysis_df = analysis_df[analysis_df["status"].isin(statuses.value)]
+        filtered_analysis_df = filtered_analysis_df[
+            filtered_analysis_df["status"].isin(statuses.value)
+        ]
 
     # Calculate cycle time for resolved issues
-    resolved_df = analysis_df[analysis_df["resolved"].notna()].copy()
-    if not resolved_df.empty:
-        resolved_df["cycle_time_days"] = (
-            resolved_df["resolved"] - resolved_df["created"]
+    filtered_resolved_df = filtered_analysis_df[
+        filtered_analysis_df["resolved"].notna()
+    ].copy()
+    if not filtered_resolved_df.empty:
+        filtered_resolved_df["cycle_time_days"] = (
+            filtered_resolved_df["resolved"] - filtered_resolved_df["created"]
         ).dt.days
 
-    analysis_df
-    return analysis_df, resolved_df
+    filtered_analysis_df
+    return filtered_analysis_df, filtered_resolved_df
 
 
 @app.cell
-def __(analysis_df, mo, px):
+def __(filtered_analysis_df, mo, px):
     mo.md("## Team Velocity Analysis")
 
-    if analysis_df.empty:
+    if filtered_analysis_df.empty:
         mo.md("No data available for velocity analysis.")
     else:
         # Story points by sprint/month
-        velocity_df = analysis_df[analysis_df["story_points"].notna()].copy()
+        velocity_df = filtered_analysis_df[
+            filtered_analysis_df["story_points"].notna()
+        ].copy()
 
         if not velocity_df.empty:
             # Group by month for velocity tracking
@@ -457,15 +465,16 @@ def __(analysis_df, mo, px):
 
 
 @app.cell
-def __(analysis_df, mo, px):
+def __(filtered_analysis_df, mo, px):
     mo.md("## Estimation Accuracy Analysis")
 
-    if analysis_df.empty:
+    if filtered_analysis_df.empty:
         mo.md("No data available for estimation accuracy analysis.")
     else:
         # Story points vs cycle time analysis
-        estimation_df = analysis_df[
-            (analysis_df["story_points"].notna()) & (analysis_df["resolved"].notna())
+        estimation_df = filtered_analysis_df[
+            (filtered_analysis_df["story_points"].notna())
+            & (filtered_analysis_df["resolved"].notna())
         ].copy()
 
         if not estimation_df.empty:
@@ -497,10 +506,10 @@ def __(analysis_df, mo, px):
 
 
 @app.cell
-def __(analysis_df, go, make_subplots, mo):
+def __(filtered_analysis_df, go, make_subplots, mo):
     mo.md("## Issue Distribution Analysis")
 
-    if not analysis_df.empty:
+    if not filtered_analysis_df.empty:
         # Create subplots for various distributions
         fig_dist = make_subplots(
             rows=2,
@@ -518,7 +527,7 @@ def __(analysis_df, go, make_subplots, mo):
         )
 
         # Status distribution
-        status_counts = analysis_df["status"].value_counts()
+        status_counts = filtered_analysis_df["status"].value_counts()
         fig_dist.add_trace(
             go.Pie(
                 labels=status_counts.index, values=status_counts.values, name="Status"
@@ -528,7 +537,7 @@ def __(analysis_df, go, make_subplots, mo):
         )
 
         # Type distribution
-        type_counts = analysis_df["issue_type"].value_counts()
+        type_counts = filtered_analysis_df["issue_type"].value_counts()
         fig_dist.add_trace(
             go.Pie(labels=type_counts.index, values=type_counts.values, name="Type"),
             row=1,
@@ -536,7 +545,7 @@ def __(analysis_df, go, make_subplots, mo):
         )
 
         # Priority distribution
-        priority_counts = analysis_df["priority"].value_counts()
+        priority_counts = filtered_analysis_df["priority"].value_counts()
         fig_dist.add_trace(
             go.Pie(
                 labels=priority_counts.index,
@@ -548,7 +557,7 @@ def __(analysis_df, go, make_subplots, mo):
         )
 
         # Project distribution
-        project_counts = analysis_df["project_key"].value_counts()
+        project_counts = filtered_analysis_df["project_key"].value_counts()
         fig_dist.add_trace(
             go.Pie(
                 labels=project_counts.index,
@@ -568,13 +577,13 @@ def __(analysis_df, go, make_subplots, mo):
 
 
 @app.cell
-def __(analysis_df, mo, px, resolved_df):
+def __(filtered_analysis_df, mo, px, filtered_resolved_df):
     mo.md("## Cycle Time Analysis")
 
-    if not resolved_df.empty:
+    if not filtered_resolved_df.empty:
         # Box plot of cycle times by issue type
         fig_cycle = px.box(
-            resolved_df,
+            filtered_resolved_df,
             x="issue_type",
             y="cycle_time_days",
             title="Cycle Time Distribution by Issue Type",
@@ -583,18 +592,18 @@ def __(analysis_df, mo, px, resolved_df):
         fig_cycle.update_layout(height=400)
 
         # Cycle time trend over time
-        cycle_trend_df = resolved_df.copy()
+        cycle_trend_df = filtered_resolved_df.copy()
         cycle_trend_df["resolved_month"] = (
             cycle_trend_df["resolved"].dt.to_period("M").astype(str)
         )
-        avg_cycle_time = (
+        cycle_avg_time = (
             cycle_trend_df.groupby("resolved_month")["cycle_time_days"]
             .mean()
             .reset_index()
         )
 
         fig_cycle_trend = px.line(
-            avg_cycle_time,
+            cycle_avg_time,
             x="resolved_month",
             y="cycle_time_days",
             title="Average Cycle Time Trend",
@@ -608,35 +617,41 @@ def __(analysis_df, mo, px, resolved_df):
         mo.vstack([mo.ui.plotly(fig_cycle), mo.ui.plotly(fig_cycle_trend)])
     else:
         mo.md("No resolved issues available for cycle time analysis.")
-    return avg_cycle_time, cycle_trend_df, fig_cycle, fig_cycle_trend
+    return cycle_avg_time, cycle_trend_df, fig_cycle, fig_cycle_trend
 
 
 @app.cell
-def __(analysis_df, mo):
+def __(filtered_analysis_df, mo):
     mo.md("## Key Metrics Summary")
 
-    if not analysis_df.empty:
+    if not filtered_analysis_df.empty:
         # Calculate key metrics
-        total_issues = len(analysis_df)
-        resolved_issues = len(analysis_df[analysis_df["resolved"].notna()])
-        resolution_rate = (
-            (resolved_issues / total_issues * 100) if total_issues > 0 else 0
+        summary_total_issues = len(filtered_analysis_df)
+        summary_resolved_issues = len(
+            filtered_analysis_df[filtered_analysis_df["resolved"].notna()]
         )
-
-        avg_story_points = (
-            analysis_df["story_points"].mean()
-            if "story_points" in analysis_df.columns
-            else 0
-        )
-        total_story_points = (
-            analysis_df["story_points"].sum()
-            if "story_points" in analysis_df.columns
+        summary_resolution_rate = (
+            (summary_resolved_issues / summary_total_issues * 100)
+            if summary_total_issues > 0
             else 0
         )
 
-        avg_cycle_time = (
-            analysis_df[analysis_df["resolved"].notna()]["cycle_time_days"].mean()
-            if "cycle_time_days" in analysis_df.columns
+        summary_avg_story_points = (
+            filtered_analysis_df["story_points"].mean()
+            if "story_points" in filtered_analysis_df.columns
+            else 0
+        )
+        summary_total_story_points = (
+            filtered_analysis_df["story_points"].sum()
+            if "story_points" in filtered_analysis_df.columns
+            else 0
+        )
+
+        summary_avg_cycle_time = (
+            filtered_analysis_df[filtered_analysis_df["resolved"].notna()][
+                "cycle_time_days"
+            ].mean()
+            if "cycle_time_days" in filtered_analysis_df.columns
             else 0
         )
 
@@ -644,11 +659,11 @@ def __(analysis_df, mo):
             f"""
         ### 📊 Key Performance Indicators
         
-        - **Total Issues**: {total_issues:,}
-        - **Resolved Issues**: {resolved_issues:,} ({resolution_rate:.1f}%)
-        - **Total Story Points**: {total_story_points:.0f}
-        - **Average Story Points per Issue**: {avg_story_points:.1f}
-        - **Average Cycle Time**: {avg_cycle_time:.1f} days
+        - **Total Issues**: {summary_total_issues:,}
+        - **Resolved Issues**: {summary_resolved_issues:,} ({summary_resolution_rate:.1f}%)
+        - **Total Story Points**: {summary_total_story_points:.0f}
+        - **Average Story Points per Issue**: {summary_avg_story_points:.1f}
+        - **Average Cycle Time**: {summary_avg_cycle_time:.1f} days
         
         ### 📈 Insights for ScrumMasters & Product Owners
         
@@ -662,12 +677,12 @@ def __(analysis_df, mo):
     else:
         mo.md("No data available for metrics calculation.")
     return (
-        avg_cycle_time,
-        avg_story_points,
-        resolution_rate,
-        resolved_issues,
-        total_issues,
-        total_story_points,
+        summary_avg_cycle_time,
+        summary_avg_story_points,
+        summary_resolution_rate,
+        summary_resolved_issues,
+        summary_total_issues,
+        summary_total_story_points,
     )
 
 
