@@ -41,7 +41,7 @@ setup(
     long_description=read_readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/company/jira-analytics",
-    packages=find_packages(),
+    py_modules=['jira_extractor', 'jira_analytics_cli', 'jira_analytics'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
